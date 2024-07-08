@@ -36,7 +36,7 @@ class CustomUserViewSet(UserViewSet):
 
     def get_permissions(self):
         if self.action in ('list', 'create', 'retrieve'):
-            self.permission_classes = [AllowAny,]
+            self.permission_classes = [AllowAny, ]
         return super().get_permissions()
 
     @action(methods=['put', 'delete'], detail=True)
@@ -83,7 +83,7 @@ class CustomUserViewSet(UserViewSet):
             return Response(status=204)
 
     @action(
-        methods=['get',],
+        methods=['get', ],
         detail=False,
     )
     def subscriptions(self, request):
