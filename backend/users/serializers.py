@@ -1,12 +1,13 @@
 from rest_framework import serializers
 # from django.core.validators import RegexValidator
 from users.models import MyUser, Follow
+# from recipes.serializers import ShortRecipeSerializer
 from recipes.models import Recipes
 # from django.contrib.auth import authenticate, get_user_model
 from djoser.serializers import UserSerializer, UserCreateSerializer
 from django.core.files.base import ContentFile
 import base64
-# from recipes.serializers import ShortRecipeSerializer
+
 
 # SAME_DATA_REGISTRATION =
 # 'Пользователь с таким учетными данными уже существует'
@@ -46,7 +47,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
 
 class CustomUserSerializer(UserSerializer):
 
-    # avatar = Base64ImageField(required=False, allow_null=True)
+    avatar = Base64ImageField(required=False, allow_null=True)
 
     is_subscribed = serializers.SerializerMethodField()
 
@@ -83,9 +84,17 @@ class CustomUserSerializer(UserSerializer):
     #     ).exists()
 
 
+class ShortRecipeSerializer(serializers.ModelSerializer):
+    image = serializers.CharField()
+
+    class Meta:
+        model = Recipes
+        fields = ('id', 'name', 'image', 'cooking_time')
+
+
 class CustomUserAvatarSerializer(UserSerializer):
 
-    avatar = Base64ImageField(required=False, allow_null=True)
+    avatar = Base64ImageField()
 
     class Meta:
         model = MyUser

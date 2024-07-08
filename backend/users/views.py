@@ -1,33 +1,32 @@
 from django.shortcuts import get_object_or_404
-# from rest_framework import filters, status, permissions, mixins, viewsets
-from users.models import MyUser, Follow
+from djoser.serializers import SetPasswordSerializer
 from djoser.views import UserViewSet
-# from djoser.permissions import CurrentUserOrAdminOrReadOnly
-# from django.contrib.auth import get_user_model
-# from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.response import Response
+from rest_framework import status, serializers
 from rest_framework.decorators import action
+from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+
+from users.models import MyUser, Follow
 from users.serializers import (
     CustomUserSerializer,
     CustomUserCreateSerializer,
     FollowSerializer,
+    CustomUserAvatarSerializer,
 )
-from rest_framework.permissions import AllowAny
-from rest_framework import serializers
-
-# User = get_user_model()
 
 
 class CustomUserViewSet(UserViewSet):
 
     serializer_class = CustomUserCreateSerializer
+    pagination_class = LimitOffsetPagination
 
     def get_serializer_class(self):
         print(self.action)
         if self.action in ('list', 'retrieve'):
             return CustomUserSerializer
-        # if self.action == 'set_password':
-        #     return SetPasswordSerializer
+        if self.action == 'set_password':
+            return SetPasswordSerializer
         if self.action == 'me':
             return CustomUserSerializer
         if self.action == 'create':
@@ -40,37 +39,18 @@ class CustomUserViewSet(UserViewSet):
             self.permission_classes = [AllowAny,]
         return super().get_permissions()
 
-    # @action(
-    #     detail=True,
-    #     # permission_classes=(AllowAny, ),
-    #     methods=['put', 'delete'],
-    #     # url_path='me/avatar',
-    #     # permission_classes=[permissions.IsAuthenticated],
-    # )
-    # def avatar(self, request):
-    #     if request.method == 'DELETE':
-    #         request.user.avatar = None
-    #         request.user.save()
-    #         return Response(request.data, status=status.HTTP_204_NO_CONTENT)
-
-    #     serializer = CustomUserAvatarSerializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     serializer.save()
-    #     return Response(serializer.data, status=status.HTTP_200_OK)
-
-    # @action(methods=['put', 'delete'], detail=True)
-    # def avatar(self, request, **kwargs):
-    #     user = get_object_or_404(MyUser, username=request.user)
-    #     if request.method == 'PUT':
-    #         serializers = CustomUserAvatarSerializer(user, data=request.data)
-    #         if serializers.is_valid():
-    #             serializers.save()
-    #             return Response(serializers.data, status=200)
-    #         return Response(serializers.errors, status=400)
-    #     if request.method == 'DELETE':
-    #         user.avatar = None
-    #         user.save()
-    #         return Response(status=204)
+    @action(methods=['put', 'delete'], detail=True)
+    def avatar(self, request, **kwargs):
+        user = get_object_or_404(MyUser, username=request.user)
+        if request.method == 'PUT':
+            serializers = CustomUserAvatarSerializer(user, data=request.data)
+            if serializers.is_valid():
+                serializers.save()
+                return Response(serializers.data, status=status.HTTP_200_OK)
+            return Response(serializers.errors, status=400)
+        user.avatar = None
+        user.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
         methods=['post', 'delete'],

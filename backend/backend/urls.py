@@ -1,15 +1,19 @@
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
-# from rest_framework.authtoken import views
-# from djoser.views import UserViewSet
-# from rest_framework.routers import DefaultRouter
 
-# router = DefaultRouter()
-# router.register(r'users', UserViewSet)
+from api.views import ShortLinkView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('api.urls')),
     path('api/', include('djoser.urls')),
     path('api/auth/', include('djoser.urls.authtoken')),
+    path('s/<str:encoded_id>/', ShortLinkView.as_view(), name='shortlink'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
+    )

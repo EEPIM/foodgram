@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    'django_filters',
     'djoser',
 ]
 
@@ -97,7 +98,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        # 'rest_framework.permissions.IsAuthenticated',
         'rest_framework.permissions.AllowAny',
     ],
 
@@ -119,8 +119,6 @@ DJOSER = {
     },
     'PERMISSIONS': {
         'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
-        # 'user': ['rest_framework.permissions.AllowAny'],
-        # 'user_list': ['rest_framework.permissions.AllowAny'],
         'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
     },
 }

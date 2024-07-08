@@ -1,4 +1,6 @@
+from django.core.validators import MinValueValidator
 from django.db import models
+
 from users.models import MyUser
 
 
@@ -18,7 +20,6 @@ class Ingredients(models.Model):
 class Tags(models.Model):
 
     name = models.CharField(max_length=25)
-    color = models.SlugField()
     slug = models.CharField(max_length=25)
 
     class Meta:
@@ -41,11 +42,18 @@ class Recipes(models.Model):
         related_name='recipes',
         verbose_name='Автор'
     )
-
-    image = models.CharField(max_length=200, blank=True)
+    image = models.ImageField(
+        upload_to='recipes/images/',
+        blank=True, null=True,
+        default=None,
+        verbose_name='Изображение'
+    )
     name = models.CharField(max_length=200)
     text = models.TextField()
-    cooking_time = models.IntegerField()
+    cooking_time = models.PositiveSmallIntegerField(
+        verbose_name='Время приготовления',
+        validators=[MinValueValidator(1)],
+    )
 
     class Meta:
         verbose_name = 'рецепт'
@@ -67,3 +75,33 @@ class RecipesIngredients(models.Model):
 
     def __str__(self):
         return f'{self.recipe} {self.ingredient} {self.amount}'
+
+
+class Favorite(models.Model):
+    user = models.ForeignKey(
+        MyUser,
+        on_delete=models.CASCADE,
+        related_name='favorites',
+        verbose_name='Пользователь'
+    )
+    recipe = models.ForeignKey(
+        Recipes,
+        on_delete=models.CASCADE,
+        related_name='favorites',
+        verbose_name='Рецепт'
+    )
+
+
+class ShoppingCart(models.Model):
+    user = models.ForeignKey(
+        MyUser,
+        on_delete=models.CASCADE,
+        related_name='shopping_cart',
+        verbose_name='Пользователь'
+    )
+    recipe = models.ForeignKey(
+        Recipes,
+        on_delete=models.CASCADE,
+        related_name='shopping_cart',
+        verbose_name='Рецепт'
+    )
