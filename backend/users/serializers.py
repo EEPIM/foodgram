@@ -8,6 +8,7 @@ from users.models import MyUser, Follow
 
 
 class Base64ImageField(serializers.ImageField):
+    """Сериализатор для картинок"""
     def to_internal_value(self, data):
         if isinstance(data, str) and data.startswith('data:image'):
             format, imgstr = data.split(';base64,')
@@ -18,6 +19,7 @@ class Base64ImageField(serializers.ImageField):
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
+    """Сериализатор для редактирования пользователя."""
 
     email = serializers.EmailField(required=True)
     first_name = serializers.CharField(required=True, max_length=150)
@@ -36,6 +38,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
 
 
 class CustomUserSerializer(UserSerializer):
+    """Сериализатор для просмотра пользователя"""
 
     avatar = Base64ImageField(required=False, allow_null=True)
     is_subscribed = serializers.SerializerMethodField()
@@ -53,15 +56,18 @@ class CustomUserSerializer(UserSerializer):
         )
 
     def get_is_subscribed(self, obj):
-        user = self.context.get('request').user
-        if user.is_anonymous:
-            print(False)
-            return False
-        print(Follow.objects.filter(follower=user, author=obj))
-        return Follow.objects.filter(follower=user, author=obj.id).exists()
+        return (
+            self.context.get('request').user.is_authenticated
+            and Follow.objects.filter(
+                follower=self.context.get('request').user,
+                author=obj.id
+            ).exists()
+        )
 
 
 class ShortRecipeSerializer(serializers.ModelSerializer):
+    """Сериализатор для краткой информации рецептов"""
+
     image = serializers.CharField()
 
     class Meta:
@@ -70,6 +76,7 @@ class ShortRecipeSerializer(serializers.ModelSerializer):
 
 
 class CustomUserAvatarSerializer(UserSerializer):
+    """Сериализатор для аватара пользователя"""
 
     avatar = Base64ImageField()
 
@@ -81,6 +88,7 @@ class CustomUserAvatarSerializer(UserSerializer):
 
 
 class FollowSerializer(CustomUserSerializer):
+    """Сериализатор для подписок"""
 
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
@@ -102,11 +110,11 @@ class FollowSerializer(CustomUserSerializer):
     def get_recipes(self, obj):
         request = self.context.get('request')
         limit = request.GET.get('recipes_limit')
-        recipes = obj.recipes.all()
+        recipes = Recipes.objects.filter(author=obj.id)
         if limit:
             recipes = recipes[:int(limit)]
         serializer = ShortRecipeSerializer(recipes, many=True, read_only=True)
         return serializer.data
 
     def get_recipes_count(self, obj):
-        return obj.recipes.count()
+        return Recipes.objects.filter(author=obj.id).count()

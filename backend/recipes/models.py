@@ -33,9 +33,13 @@ class Tags(models.Model):
 class Recipes(models.Model):
 
     ingredients = models.ManyToManyField(
-        Ingredients, through='RecipesIngredients')
+        Ingredients,
+        through='RecipesIngredients',
+    )
 
-    tags = models.ManyToManyField(Tags)
+    tags = models.ManyToManyField(
+        Tags,
+    )
     author = models.ForeignKey(
         MyUser,
         on_delete=models.CASCADE,
@@ -71,7 +75,9 @@ class RecipesIngredients(models.Model):
     ingredient = models.ForeignKey(
         Ingredients, on_delete=models.PROTECT
     )
-    amount = models.IntegerField()
+    amount = models.IntegerField(
+        validators=[MinValueValidator(1)],
+    )
 
     def __str__(self):
         return f'{self.recipe} {self.ingredient} {self.amount}'
