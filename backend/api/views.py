@@ -99,9 +99,12 @@ class RecipesViewSet(viewsets.ModelViewSet):
     def favorite(self, request, pk):
         """Добавление рецепта в избранное"""
 
-        model = Favorite
-        message = 'Рецепт уже есть в избранном.'
-        return self.add_or_delete(model, pk, message, request)
+        return self.add_or_delete(
+            Favorite,
+            pk,
+            'Рецепт уже есть в избранном.',
+            request
+        )
 
     @action(
         detail=True,
@@ -110,9 +113,12 @@ class RecipesViewSet(viewsets.ModelViewSet):
     def shopping_cart(self, request, pk):
         """Добавление ингредиентов в список покупок."""
 
-        model = ShoppingCart
-        message = 'Ингредиенты из рецепта уже добавлены в список покупок'
-        return self.add_or_delete(model, pk, message, request)
+        return self.add_or_delete(
+            ShoppingCart,
+            pk,
+            'Ингредиенты из рецепта уже добавлены в список покупок',
+            request
+        )
 
     @action(
         detail=False,
@@ -197,7 +203,7 @@ class CustomUserViewSet(UserViewSet):
         detail=True
     )
     def avatar(self, request, id):
-        user = get_object_or_404(User, username=request.user)
+        user = request.user
         if request.method == 'PUT':
             serializers = CustomUserAvatarSerializer(user, data=request.data)
             serializers.is_valid(raise_exception=True)
