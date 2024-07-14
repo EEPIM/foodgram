@@ -1,8 +1,9 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from api.views import TagsViewSet, IngredientsViewSet, RecipesViewSet
-from users.views import CustomUserViewSet
+from api.views import (
+    TagsViewSet, IngredientsViewSet, RecipesViewSet, CustomUserViewSet
+)
 
 router = DefaultRouter()
 router.register(r'users', CustomUserViewSet)

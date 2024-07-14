@@ -3,7 +3,7 @@ from django.core.validators import RegexValidator
 from django.db import models
 
 
-class MyUser(AbstractUser):
+class User(AbstractUser):
 
     email = models.EmailField(
         max_length=254,
@@ -27,7 +27,7 @@ class MyUser(AbstractUser):
     REQUIRED_FIELDS = ["username", "first_name", "last_name", "password", ]
 
     class Meta:
-        verbose_name = 'Пользователь'
+        verbose_name = 'пользователь'
         verbose_name_plural = 'Пользователи'
 
     def __str__(self):
@@ -37,18 +37,24 @@ class MyUser(AbstractUser):
 class Follow(models.Model):
 
     follower = models.ForeignKey(
-        MyUser,
+        User,
         on_delete=models.CASCADE,
         null=True,
-        related_name='follower')
+        related_name='follower',
+        verbose_name='подписчик',
+    )
 
     author = models.ForeignKey(
-        MyUser,
+        User,
         on_delete=models.CASCADE,
         null=True,
-        related_name='author')
+        related_name='author',
+        verbose_name='автор',
+    )
 
     class Meta:
+        verbose_name = 'подписка'
+        verbose_name_plural = 'Подписки'
         constraints = [
             models.UniqueConstraint(
                 fields=['follower', 'author'],

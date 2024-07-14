@@ -1,14 +1,18 @@
 import os
-
 from pathlib import Path
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-7!m^cf+21cyqz5@mo82rkb^85-zkpdv%#9sb7z($-39e7#x1&p'
 
-DEBUG = True
+SECRET_KEY = os.getenv('SETTINGS_SECRET_KEY')
 
-ALLOWED_HOSTS = []
+DEBUG = (os.getenv('DEBUG', 'False') == 'True')
+
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 
 INSTALLED_APPS = [
     'api.apps.ApiConfig',
@@ -90,7 +94,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-AUTH_USER_MODEL = 'users.MyUser'
+AUTH_USER_MODEL = 'users.User'
 
 STATIC_URL = '/static/'
 
@@ -113,9 +117,9 @@ REST_FRAMEWORK = {
 DJOSER = {
     'HIDE_USERS': False,
     'SERIALIZERS': {
-        'user_create': "users.serializers.CustomUserCreateSerializer",
-        'user': 'users.serializers.CustomUserSerializer',
-        'current_user': 'users.serializers.CustomUserSerializer',
+        'user_create': 'api.serializers.CustomUserCreateSerializer',
+        'user': 'api.serializers.CustomUserSerializer',
+        'current_user': 'api.serializers.CustomUserSerializer',
     },
     'PERMISSIONS': {
         'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
@@ -124,4 +128,5 @@ DJOSER = {
 }
 
 MEDIA_URL = '/media/'
+
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

@@ -1,6 +1,8 @@
 import csv
+
 from django.core.management.base import BaseCommand
-from recipes.models import Ingredients
+
+from recipes.models import Ingredient
 
 
 class Command(BaseCommand):
@@ -20,7 +22,7 @@ class Command(BaseCommand):
                 name_csv = 0
                 unit_of_measurement_csv = 1
                 try:
-                    obj, created = Ingredients.objects.get_or_create(
+                    obj, created = Ingredient.objects.get_or_create(
                         name=row[name_csv],
                         measurement_unit=row[unit_of_measurement_csv],
                     )
