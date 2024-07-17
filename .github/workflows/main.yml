@@ -2,7 +2,7 @@ name: Main Foodgram workflow
 
 on: push
 
-jobs:
+jobs: 
 
   build_and_push_to_docker_hub:
     name: Push Docker image to DockerHub
