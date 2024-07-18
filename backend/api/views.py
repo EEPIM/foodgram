@@ -153,7 +153,11 @@ class RecipesViewSet(viewsets.ModelViewSet):
         shopping_list = '\n'.join(shopping_list)
 
         filename = 'Shopping_list.csv'
-        response = HttpResponse(shopping_list, content_type='text/csv')
+        response = HttpResponse(
+            shopping_list,
+            encoding='utf-8-sig',
+            content_type='text/csv'
+        )
         response['Content-Disposition'] = f'attachment; filename={filename}'
 
         return response
