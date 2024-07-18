@@ -12,7 +12,7 @@ SECRET_KEY = os.getenv('SETTINGS_SECRET_KEY')
 
 # DEBUG = (os.getenv('DEBUG', 'False') == 'True')
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['51.250.27.124', '127.0.0.1', 'localhost', 'foodgram-recipes.zapto.org',]
 

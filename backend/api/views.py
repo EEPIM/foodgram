@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from djoser.views import UserViewSet
 from django.urls import reverse
 from django.utils import baseconv
@@ -186,12 +186,13 @@ class ShortLinkView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         recipe_id = baseconv.base64.decode(encoded_id)
-        recipe = get_object_or_404(Recipe, pk=recipe_id)
-        return HttpResponseRedirect(
-            request.build_absolute_uri(
-                f'/api/recipes/{recipe.id}/'
-            )
-        )
+        return redirect(f'/recipes/{recipe_id}/',)
+        # recipe = get_object_or_404(Recipe, pk=recipe_id)
+        # return HttpResponseRedirect(
+        #     request.build_absolute_uri(
+        #         f'/api/recipes/{recipe.id}/'
+        #     )
+        # )
 
 
 class CustomUserViewSet(UserViewSet):
