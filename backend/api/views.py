@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.filters import RecipeFilter
+from api.pagination import CustomPagination
 from api.permissions import IsAuthorOrReadOnly
 from api.serializers import (
     TagsSerializer,
@@ -51,13 +52,15 @@ class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = IngredientsSerializer
     pagination_class = None
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
-    filterset_fields = ('name',)
+    # filterset_fields = ('name',)
+    search_fields = ('name',)
 
 
 class RecipesViewSet(viewsets.ModelViewSet):
     """Вьюсет рецептов"""
     queryset = Recipe.objects.all()
-    pagination_class = LimitOffsetPagination
+    # pagination_class = LimitOffsetPagination
+    pagination_class = CustomPagination
     permission_classes = (IsAuthorOrReadOnly,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filterset_class = RecipeFilter
