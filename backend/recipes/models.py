@@ -128,6 +128,9 @@ class Favorite(models.Model):
             )
         ]
 
+    def __str__(self):
+        return f'{self.recipe} {self.user}'
+
 
 class ShoppingCart(models.Model):
     user = models.ForeignKey(
