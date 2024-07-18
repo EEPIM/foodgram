@@ -13,7 +13,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.filters import IngredientSearch, RecipeFilter
+from api.filters import RecipeFilter
 from api.pagination import RecipePagination
 from api.permissions import IsAuthorOrReadOnly
 from api.serializers import (
@@ -52,18 +52,15 @@ class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = IngredientsSerializer
     pagination_class = None
     filter_backends = (filters.SearchFilter,)
-    # filterset_fields = ('name',)
+    filterset_fields = ('name',)
     search_fields = ('^name',)
-    search_param = 'name'
+    # search_param = 'name'
 
 
 class RecipesViewSet(viewsets.ModelViewSet):
     """Вьюсет рецептов"""
     queryset = Recipe.objects.all()
-    pagination_class = PageNumberPagination
-    page_size_query_param = 'limit'
-    page_size = 6
-    # pagination_class = RecipePagination
+    pagination_class = RecipePagination
     permission_classes = (IsAuthorOrReadOnly,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filterset_class = RecipeFilter
