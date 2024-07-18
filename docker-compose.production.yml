@@ -17,8 +17,8 @@ services:
     image: eepim/foodgram_backend
     env_file: .env
     volumes:
-      - static:/backend_static/
-      - media:/app/media/
+      - static:/backend_static
+      - media:/app/media
     depends_on:
       - db
 
@@ -27,7 +27,7 @@ services:
     image: eepim/foodgram_frontend
     command: cp -r /app/build/. /frontend_static/
     volumes:
-      - static:/frontend_static/
+      - static:/frontend_static
 
   gateway:
     env_file: .env
@@ -40,4 +40,4 @@ services:
       - 8000:80
     volumes:
       - static:/staticfiles/
-      - media:/app/media/
+      - media:/app/media
