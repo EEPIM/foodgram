@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Sum
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from djoser.views import UserViewSet
 from django.urls import reverse
@@ -8,7 +8,7 @@ from django.utils import baseconv
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets, filters
 from rest_framework.decorators import action
-from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -51,16 +51,19 @@ class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientsSerializer
     pagination_class = None
-    filter_backends = (IngredientSearch,)
+    filter_backends = (filters.SearchFilter,)
     # filterset_fields = ('name',)
     search_fields = ('^name',)
+    search_param = 'name'
 
 
 class RecipesViewSet(viewsets.ModelViewSet):
     """Вьюсет рецептов"""
     queryset = Recipe.objects.all()
-    # pagination_class = LimitOffsetPagination
-    pagination_class = RecipePagination
+    pagination_class = PageNumberPagination
+    page_size_query_param = 'limit'
+    page_size = 6
+    # pagination_class = RecipePagination
     permission_classes = (IsAuthorOrReadOnly,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filterset_class = RecipeFilter
@@ -155,7 +158,6 @@ class RecipesViewSet(viewsets.ModelViewSet):
         filename = 'Shopping_list.txt'
         response = HttpResponse(
             shopping_list,
-            # encoding='utf-8-sig',
             content_type='text/txt'
         )
         response['Content-Disposition'] = f'attachment; filename={filename}'
@@ -187,12 +189,6 @@ class ShortLinkView(APIView):
             )
         recipe_id = baseconv.base64.decode(encoded_id)
         return redirect(f'/recipes/{recipe_id}/',)
-        # recipe = get_object_or_404(Recipe, pk=recipe_id)
-        # return HttpResponseRedirect(
-        #     request.build_absolute_uri(
-        #         f'/api/recipes/{recipe.id}/'
-        #     )
-        # )
 
 
 class CustomUserViewSet(UserViewSet):
