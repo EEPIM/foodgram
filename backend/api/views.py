@@ -8,7 +8,7 @@ from django.utils import baseconv
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets, filters
 from rest_framework.decorators import action
-from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -54,7 +54,6 @@ class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = (filters.SearchFilter,)
     filterset_fields = ('name',)
     search_fields = ('^name',)
-    # search_param = 'name'
 
 
 class RecipesViewSet(viewsets.ModelViewSet):
